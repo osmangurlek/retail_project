@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: retail
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+  etl:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: retail
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    volumes:
+      - .:/app
+    command: ["python", "ingest.py"]
+
+volumes:
+  postgres_data:
